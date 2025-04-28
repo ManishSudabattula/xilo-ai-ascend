@@ -6,7 +6,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4">
       <motion.div 
-        className="flex items-center gap-3"
+        className="flex items-center gap-2"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -16,10 +16,11 @@ const Navbar = () => {
           alt="FrameWorkx Logo" 
           className="w-10 h-10 brightness-0 invert"
         />
-        <span className="text-xl font-bold text-frameworkx-text">FrameWorkx</span>
+        <span className="text-lg font-bold text-frameworkx-text">FrameWorkx</span>
       </motion.div>
     </nav>
   );
 };
 
 export default Navbar;
+
