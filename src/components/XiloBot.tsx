@@ -19,7 +19,7 @@ const XiloBot: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const moveEyes = (eyeRef: HTMLDivElement | null) => {
+    const moveEyes = (eyeRef: HTMLDivElement | null, isRightEye: boolean = false) => {
       if (!eyeRef) return;
       
       const eye = eyeRef.getBoundingClientRect();
@@ -31,7 +31,7 @@ const XiloBot: React.FC = () => {
       
       const angle = Math.atan2(dy, dx);
       
-      const eyeRadius = Math.min(eye.width, eye.height) * 0.25;
+      const eyeRadius = Math.min(eye.width, eye.height) * 0.2;
       
       const moveX = Math.cos(angle) * eyeRadius;
       const moveY = Math.sin(angle) * eyeRadius;
@@ -39,8 +39,8 @@ const XiloBot: React.FC = () => {
       eyeRef.style.transform = `translate(${moveX}px, ${moveY}px)`;
     };
 
-    moveEyes(leftEyeRef.current);
-    moveEyes(rightEyeRef.current);
+    moveEyes(leftEyeRef.current, false);
+    moveEyes(rightEyeRef.current, true);
   }, [mousePosition]);
 
   return (
@@ -62,7 +62,7 @@ const XiloBot: React.FC = () => {
 
         <div className="absolute left-[30%] top-[30%] w-[15%] h-[15%] rounded-full overflow-hidden">
           <div 
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%] bg-white rounded-full" 
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%] bg-black rounded-full" 
             ref={leftEyeRef} 
             style={{ transition: 'transform 0.1s ease-out' }} 
           />
@@ -70,7 +70,7 @@ const XiloBot: React.FC = () => {
         
         <div className="absolute right-[30%] top-[30%] w-[15%] h-[15%] rounded-full overflow-hidden">
           <div 
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%] bg-white rounded-full" 
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%] bg-black rounded-full" 
             ref={rightEyeRef}
             style={{ transition: 'transform 0.1s ease-out' }} 
           />
