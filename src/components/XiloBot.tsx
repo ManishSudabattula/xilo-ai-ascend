@@ -19,10 +19,10 @@ const XiloBot: React.FC = () => {
     const dx = mouse.docX - botCenterX;
     const dy = mouse.docY - botCenterY;
     
-    // Limit head movement - subtle tracking
-    const maxHeadMovement = 15; // Increased for more noticeable movement
-    const headMovementX = Math.min(Math.max(dx / 40, -1), 1) * maxHeadMovement;
-    const headMovementY = Math.min(Math.max(dy / 40, -1), 1) * maxHeadMovement;
+    // Increased movement range and made more responsive
+    const maxHeadMovement = 20;
+    const headMovementX = Math.min(Math.max(dx / 25, -1), 1) * maxHeadMovement;
+    const headMovementY = Math.min(Math.max(dy / 25, -1), 1) * maxHeadMovement;
 
     // Apply transformation to the bot head
     botHeadRef.current.style.transform = `translate(${headMovementX}px, ${headMovementY}px)`;
@@ -32,7 +32,7 @@ const XiloBot: React.FC = () => {
   return (
     <motion.div 
       ref={botRef}
-      className="relative w-64 h-64 md:w-80 md:h-80 mx-auto mb-6"
+      className="relative w-48 h-48 md:w-60 md:h-60 mx-auto mb-6" // Decreased size from w-64/h-64 to w-48/h-48
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
