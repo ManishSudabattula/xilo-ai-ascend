@@ -32,19 +32,19 @@ const ParticleBackground: React.FC = () => {
       transparent: true
     });
 
-    // Generate fixed particle positions and colors in a grid-like pattern
+    // Generate random positions in a circular area
     for(let i = 0; i < particlesCount * 3; i += 3) {
-      const col = Math.floor((i / 3) % Math.sqrt(particlesCount));
-      const row = Math.floor((i / 3) / Math.sqrt(particlesCount));
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 2;
       
-      positions[i] = (col - Math.sqrt(particlesCount) / 2) * 0.5;
-      positions[i + 1] = (row - Math.sqrt(particlesCount) / 2) * 0.5;
-      positions[i + 2] = 0;
+      positions[i] = Math.cos(angle) * radius;     // x
+      positions[i + 1] = Math.sin(angle) * radius; // y
+      positions[i + 2] = (Math.random() - 0.5);    // z - slight depth variation
       
       // Purple-blue gradient colors
-      colors[i] = 0.5 + Math.random() * 0.5; // R
+      colors[i] = 0.5 + Math.random() * 0.5;     // R
       colors[i + 1] = 0.3 + Math.random() * 0.4; // G
-      colors[i + 2] = 1.0; // B
+      colors[i + 2] = 1.0;                       // B
     }
     
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
