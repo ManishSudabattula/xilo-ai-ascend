@@ -8,6 +8,7 @@ interface SectionProps {
   isVisible: boolean;
   align?: 'left' | 'right' | 'center';
   animationDelay?: number;
+  id?: string;
 }
 
 const Section: React.FC<SectionProps> = ({ 
@@ -15,7 +16,8 @@ const Section: React.FC<SectionProps> = ({
   children, 
   isVisible,
   align = 'left',
-  animationDelay = 0
+  animationDelay = 0,
+  id
 }) => {
   const textAlignClass = {
     'left': 'text-left',
@@ -69,6 +71,7 @@ const Section: React.FC<SectionProps> = ({
 
   return (
     <motion.div
+      id={id}
       className={`flex flex-col ${containerAlignClass} w-full max-w-4xl mx-auto p-8 mb-32`}
       variants={containerVariants}
       initial="hidden"

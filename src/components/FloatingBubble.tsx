@@ -10,6 +10,7 @@ interface FloatingBubbleProps {
   initialPosition?: { x: number, y: number };
   anchoredPosition?: { x: number, y: number };
   onAnchorComplete?: () => void;
+  centerBottomWhenVisible?: boolean;
 }
 
 const FloatingBubble: React.FC<FloatingBubbleProps> = ({
@@ -19,7 +20,8 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
   isVisible = true,
   initialPosition = { x: 0, y: 0 },
   anchoredPosition = { x: 0, y: 0 },
-  onAnchorComplete
+  onAnchorComplete,
+  centerBottomWhenVisible = false
 }) => {
   const controls = useAnimation();
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -39,6 +41,16 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
         duration: 4,
         repeat: Infinity,
         repeatType: "reverse",
+        ease: "easeInOut"
+      }
+    },
+    centerFloating: {
+      opacity: 1,
+      scale: 1,
+      x: window.innerWidth / 2 - 32, // Center position
+      y: window.innerHeight - 100, // Bottom position with some margin
+      transition: {
+        duration: 0.8,
         ease: "easeInOut"
       }
     },
@@ -87,10 +99,12 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
       controls.start("anchored").then(() => {
         if (onAnchorComplete) onAnchorComplete();
       });
+    } else if (centerBottomWhenVisible) {
+      controls.start("centerFloating");
     } else {
       controls.start("floating");
     }
-  }, [isAnchored, controls, onAnchorComplete, isVisible]);
+  }, [isAnchored, controls, onAnchorComplete, isVisible, centerBottomWhenVisible]);
 
   useEffect(() => {
     if (isActive) {

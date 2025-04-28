@@ -43,6 +43,9 @@ const Index = () => {
     connect: false
   });
 
+  // Current active section for animations
+  const [currentSection, setCurrentSection] = useState('none');
+
   // Get viewport height for calculations
   const vh = window.innerHeight;
   
@@ -81,98 +84,120 @@ const Index = () => {
       if (scrollDirection === 'down' && !bubbleStates.about) {
         setBubbleStates(prev => ({ ...prev, about: true }));
         setSectionVisibility(prev => ({ ...prev, about: true }));
+        setCurrentSection('about');
+      }
+
+      // Make Projects bubble visible after About is anchored
+      if (bubbleStates.about && normalizedScroll >= thresholds.about + 0.05) {
+        setBubbleVisibility(prev => ({ ...prev, projects: true }));
       }
     } else if (normalizedScroll < thresholds.about && scrollDirection === 'up') {
       // Un-anchor bubble if scrolling up
       setBubbleStates(prev => ({ ...prev, about: false }));
       setSectionVisibility(prev => ({ ...prev, about: false }));
+      setCurrentSection('none');
     }
     
     // Handle Projects section visibility
     if (normalizedScroll >= thresholds.projects) {
-      // Make bubble visible
-      if (!bubbleVisibility.projects) {
-        setBubbleVisibility(prev => ({ ...prev, projects: true }));
-      }
-      
       // Anchor bubble if scrolling down
       if (scrollDirection === 'down' && !bubbleStates.projects) {
         setBubbleStates(prev => ({ ...prev, projects: true }));
         setSectionVisibility(prev => ({ ...prev, projects: true }));
+        setCurrentSection('projects');
+      }
+
+      // Make AI Lab bubble visible after Projects is anchored
+      if (bubbleStates.projects && normalizedScroll >= thresholds.projects + 0.05) {
+        setBubbleVisibility(prev => ({ ...prev, ailab: true }));
       }
     } else if (normalizedScroll < thresholds.projects && scrollDirection === 'up') {
       // Un-anchor bubble and hide it if scrolling up
       setBubbleStates(prev => ({ ...prev, projects: false }));
       setSectionVisibility(prev => ({ ...prev, projects: false }));
       
-      if (normalizedScroll < thresholds.projects - 0.05) {
+      if (normalizedScroll < thresholds.about + 0.05) {
         setBubbleVisibility(prev => ({ ...prev, projects: false }));
+      }
+      
+      if (normalizedScroll >= thresholds.about) {
+        setCurrentSection('about');
       }
     }
     
     // Handle AI Lab section visibility
     if (normalizedScroll >= thresholds.ailab) {
-      // Make bubble visible
-      if (!bubbleVisibility.ailab) {
-        setBubbleVisibility(prev => ({ ...prev, ailab: true }));
-      }
-      
       // Anchor bubble if scrolling down
       if (scrollDirection === 'down' && !bubbleStates.ailab) {
         setBubbleStates(prev => ({ ...prev, ailab: true }));
         setSectionVisibility(prev => ({ ...prev, ailab: true }));
+        setCurrentSection('ailab');
+      }
+
+      // Make Learn bubble visible after AI Lab is anchored
+      if (bubbleStates.ailab && normalizedScroll >= thresholds.ailab + 0.05) {
+        setBubbleVisibility(prev => ({ ...prev, learn: true }));
       }
     } else if (normalizedScroll < thresholds.ailab && scrollDirection === 'up') {
       // Un-anchor bubble and hide it if scrolling up
       setBubbleStates(prev => ({ ...prev, ailab: false }));
       setSectionVisibility(prev => ({ ...prev, ailab: false }));
       
-      if (normalizedScroll < thresholds.ailab - 0.05) {
+      if (normalizedScroll < thresholds.projects + 0.05) {
         setBubbleVisibility(prev => ({ ...prev, ailab: false }));
+      }
+      
+      if (normalizedScroll >= thresholds.projects) {
+        setCurrentSection('projects');
       }
     }
     
     // Handle Learn section visibility
     if (normalizedScroll >= thresholds.learn) {
-      // Make bubble visible
-      if (!bubbleVisibility.learn) {
-        setBubbleVisibility(prev => ({ ...prev, learn: true }));
-      }
-      
       // Anchor bubble if scrolling down
       if (scrollDirection === 'down' && !bubbleStates.learn) {
         setBubbleStates(prev => ({ ...prev, learn: true }));
         setSectionVisibility(prev => ({ ...prev, learn: true }));
+        setCurrentSection('learn');
+      }
+
+      // Make Connect bubble visible after Learn is anchored
+      if (bubbleStates.learn && normalizedScroll >= thresholds.learn + 0.05) {
+        setBubbleVisibility(prev => ({ ...prev, connect: true }));
       }
     } else if (normalizedScroll < thresholds.learn && scrollDirection === 'up') {
       // Un-anchor bubble and hide it if scrolling up
       setBubbleStates(prev => ({ ...prev, learn: false }));
       setSectionVisibility(prev => ({ ...prev, learn: false }));
       
-      if (normalizedScroll < thresholds.learn - 0.05) {
+      if (normalizedScroll < thresholds.ailab + 0.05) {
         setBubbleVisibility(prev => ({ ...prev, learn: false }));
+      }
+      
+      if (normalizedScroll >= thresholds.ailab) {
+        setCurrentSection('ailab');
       }
     }
     
     // Handle Connect section visibility
     if (normalizedScroll >= thresholds.connect) {
-      // Make bubble visible
-      if (!bubbleVisibility.connect) {
-        setBubbleVisibility(prev => ({ ...prev, connect: true }));
-      }
-      
       // Anchor bubble if scrolling down
       if (scrollDirection === 'down' && !bubbleStates.connect) {
         setBubbleStates(prev => ({ ...prev, connect: true }));
         setSectionVisibility(prev => ({ ...prev, connect: true }));
+        setCurrentSection('connect');
       }
     } else if (normalizedScroll < thresholds.connect && scrollDirection === 'up') {
       // Un-anchor bubble and hide it if scrolling up
       setBubbleStates(prev => ({ ...prev, connect: false }));
       setSectionVisibility(prev => ({ ...prev, connect: false }));
       
-      if (normalizedScroll < thresholds.connect - 0.05) {
+      if (normalizedScroll < thresholds.learn + 0.05) {
         setBubbleVisibility(prev => ({ ...prev, connect: false }));
+      }
+      
+      if (normalizedScroll >= thresholds.learn) {
+        setCurrentSection('learn');
       }
     }
   });
@@ -221,6 +246,7 @@ const Index = () => {
         isVisible={bubbleVisibility.about}
         initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.15 }}
+        centerBottomWhenVisible={!bubbleStates.about && currentSection === 'none'}
       />
       
       {/* Projects Bubble */}
@@ -229,8 +255,9 @@ const Index = () => {
         isAnchored={bubbleStates.projects}
         isActive={sectionVisibility.projects}
         isVisible={bubbleVisibility.projects}
-        initialPosition={{ x: -100, y: -100 }}
+        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.35 }}
+        centerBottomWhenVisible={!bubbleStates.projects && currentSection === 'about'}
       />
       
       {/* AI Lab Bubble */}
@@ -239,8 +266,9 @@ const Index = () => {
         isAnchored={bubbleStates.ailab}
         isActive={sectionVisibility.ailab}
         isVisible={bubbleVisibility.ailab}
-        initialPosition={{ x: -100, y: -100 }}
+        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.55 }}
+        centerBottomWhenVisible={!bubbleStates.ailab && currentSection === 'projects'}
       />
       
       {/* Learn Bubble */}
@@ -249,8 +277,9 @@ const Index = () => {
         isAnchored={bubbleStates.learn}
         isActive={sectionVisibility.learn}
         isVisible={bubbleVisibility.learn}
-        initialPosition={{ x: -100, y: -100 }}
+        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.75 }}
+        centerBottomWhenVisible={!bubbleStates.learn && currentSection === 'ailab'}
       />
       
       {/* Connect Bubble */}
@@ -259,8 +288,9 @@ const Index = () => {
         isAnchored={bubbleStates.connect}
         isActive={sectionVisibility.connect}
         isVisible={bubbleVisibility.connect}
-        initialPosition={{ x: -100, y: -100 }}
+        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.95 }}
+        centerBottomWhenVisible={!bubbleStates.connect && currentSection === 'learn'}
       />
       
       {/* Connecting Lines between bubbles */}
@@ -308,7 +338,7 @@ const Index = () => {
       <div className="min-h-screen pt-screen">
         {/* About Section */}
         <div className="min-h-screen flex items-center ml-32">
-          <Section title="About Frameworkx" isVisible={sectionVisibility.about} animationDelay={0.3}>
+          <Section title="About Frameworkx" isVisible={sectionVisibility.about} animationDelay={0.3} id="about">
             <p className="mb-4">
               Frameworkx is at the forefront of artificial intelligence research and development, 
               dedicated to accelerating AI integration into everyday life in meaningful ways.
@@ -326,7 +356,7 @@ const Index = () => {
         
         {/* Projects Section */}
         <div className="min-h-screen flex items-center ml-32">
-          <Section title="Our Projects" isVisible={sectionVisibility.projects} animationDelay={0.3}>
+          <Section title="Our Projects" isVisible={sectionVisibility.projects} animationDelay={0.3} id="projects">
             <p className="mb-4">
               Frameworkx leads multiple projects across various domains, from natural language 
               processing systems to computer vision applications and robotics integrations.
@@ -344,7 +374,7 @@ const Index = () => {
         
         {/* AI Lab Section */}
         <div className="min-h-screen flex items-center ml-32">
-          <Section title="AI Lab" isVisible={sectionVisibility.ailab} animationDelay={0.3}>
+          <Section title="AI Lab" isVisible={sectionVisibility.ailab} animationDelay={0.3} id="ailab">
             <p className="mb-4">
               The Frameworkx AI Lab is our innovation center where researchers and engineers 
               experiment with emerging technologies and develop new AI paradigms.
@@ -362,7 +392,7 @@ const Index = () => {
         
         {/* Learn AI Section */}
         <div className="min-h-screen flex items-center ml-32">
-          <Section title="Learn AI" isVisible={sectionVisibility.learn} animationDelay={0.3}>
+          <Section title="Learn AI" isVisible={sectionVisibility.learn} animationDelay={0.3} id="learn">
             <p className="mb-4">
               We believe that AI education should be accessible to everyone. Our learning resources 
               range from beginner-friendly introductions to advanced technical courses.
@@ -380,7 +410,7 @@ const Index = () => {
         
         {/* Connect Section */}
         <div className="min-h-screen flex items-center ml-32">
-          <Section title="Connect With Us" isVisible={sectionVisibility.connect} animationDelay={0.3}>
+          <Section title="Connect With Us" isVisible={sectionVisibility.connect} animationDelay={0.3} id="connect">
             <p className="mb-4">
               We're always looking to collaborate with passionate individuals and organizations 
               who share our vision for responsible AI advancement.
