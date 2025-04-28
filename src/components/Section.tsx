@@ -7,13 +7,15 @@ interface SectionProps {
   children: React.ReactNode;
   isVisible: boolean;
   align?: 'left' | 'right' | 'center';
+  animationDelay?: number;
 }
 
 const Section: React.FC<SectionProps> = ({ 
   title, 
   children, 
   isVisible,
-  align = 'left'
+  align = 'left',
+  animationDelay = 0
 }) => {
   const textAlignClass = {
     'left': 'text-left',
@@ -27,27 +29,61 @@ const Section: React.FC<SectionProps> = ({
     'center': 'items-center'
   }[align];
 
+  // Enhanced animation variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.8, 
+        ease: "easeInOut",
+        delay: animationDelay,
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      }
+    },
+    exit: { 
+      opacity: 0, 
+      y: 30,
+      transition: { 
+        duration: 0.6, 
+        ease: "easeInOut" 
+      }
+    }
+  };
+
+  const childVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: "easeInOut" }
+    },
+    exit: { 
+      opacity: 0, 
+      y: 20,
+      transition: { duration: 0.4, ease: "easeInOut" }
+    }
+  };
+
   return (
     <motion.div
       className={`flex flex-col ${containerAlignClass} w-full max-w-4xl mx-auto p-8 mb-32`}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
+      variants={containerVariants}
+      initial="hidden"
+      animate={isVisible ? "visible" : "hidden"}
     >
       <motion.h2 
         className={`text-4xl font-thin mb-6 ${textAlignClass} hero-text-shadow`}
-        initial={{ opacity: 0 }}
-        animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        variants={childVariants}
       >
         {title}
       </motion.h2>
       
       <motion.div
         className={`${textAlignClass} text-frameworkx-text text-lg`}
-        initial={{ opacity: 0 }}
-        animate={isVisible ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.6, delay: 0.4 }}
+        variants={childVariants}
       >
         {children}
       </motion.div>

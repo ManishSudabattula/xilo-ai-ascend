@@ -6,6 +6,7 @@ interface FloatingBubbleProps {
   label: string;
   isAnchored?: boolean;
   isActive?: boolean;
+  isVisible?: boolean;
   initialPosition?: { x: number, y: number };
   anchoredPosition?: { x: number, y: number };
   onAnchorComplete?: () => void;
@@ -15,6 +16,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
   label,
   isAnchored = false,
   isActive = false,
+  isVisible = true,
   initialPosition = { x: 0, y: 0 },
   anchoredPosition = { x: 0, y: 0 },
   onAnchorComplete
@@ -24,7 +26,13 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
 
   // Floating animation when not anchored
   const floatingAnimation: Variants = {
+    hidden: {
+      opacity: 0,
+      scale: 0,
+    },
     floating: {
+      opacity: 1,
+      scale: 1,
       y: [0, -10, 0],
       x: [0, 5, 0],
       transition: {
@@ -35,10 +43,20 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
       }
     },
     anchored: {
+      opacity: 1,
+      scale: 1,
       x: anchoredPosition.x,
       y: anchoredPosition.y,
       transition: {
         duration: 0.8,
+        ease: "easeInOut"
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0,
+      transition: {
+        duration: 0.5,
         ease: "easeInOut"
       }
     }
@@ -51,15 +69,20 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
     },
     active: {
       boxShadow: "0 0 10px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.5)",
+      scale: [1, 1.05, 1],
       transition: {
-        duration: 0.5,
-        repeat: 1,
-        repeatType: "reverse"
+        boxShadow: { duration: 0.5 },
+        scale: { duration: 2, repeat: Infinity, repeatType: "reverse" }
       }
     }
   };
 
   useEffect(() => {
+    if (!isVisible) {
+      controls.start("hidden");
+      return;
+    }
+
     if (isAnchored) {
       controls.start("anchored").then(() => {
         if (onAnchorComplete) onAnchorComplete();
@@ -67,7 +90,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
     } else {
       controls.start("floating");
     }
-  }, [isAnchored, controls, onAnchorComplete]);
+  }, [isAnchored, controls, onAnchorComplete, isVisible]);
 
   useEffect(() => {
     if (isActive) {
@@ -81,9 +104,10 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
     <motion.div
       ref={bubbleRef}
       className="absolute"
-      initial={{ x: initialPosition.x, y: initialPosition.y }}
+      initial="hidden"
       animate={controls}
       variants={floatingAnimation}
+      style={{ x: initialPosition.x, y: initialPosition.y }}
     >
       <motion.div 
         className={`flex items-center justify-center w-16 h-16 rounded-full bg-frameworkx-black bg-opacity-70 backdrop-blur-sm border border-white border-opacity-30 cursor-pointer z-40`}
