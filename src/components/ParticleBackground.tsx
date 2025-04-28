@@ -88,7 +88,13 @@ const ParticleBackground: React.FC = () => {
       const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
       const positions = positionAttribute.array;
       const colorAttribute = particlesGeometry.getAttribute('color') as THREE.BufferAttribute;
-      const colorArray = colorAttribute.array;
+      
+      // Create a mutable copy of the color array to fix the TypeScript error
+      const colorArray = new Float32Array(colorAttribute.array.length);
+      for (let i = 0; i < colorAttribute.array.length; i++) {
+        colorArray[i] = colorAttribute.array[i];
+      }
+      
       const linePositions: number[] = [];
       const lineColors: number[] = [];
       
@@ -104,8 +110,7 @@ const ParticleBackground: React.FC = () => {
         const glowRadius = 3; // Radius of glow effect
         const intensity = Math.max(0, 1 - (distanceToMouse / glowRadius));
         
-        // Update colors with glow - using the properly defined colorArray
-        // Create a temporary array with new colors
+        // Update colors with glow - using the mutable colorArray
         const newR = 0.6 + intensity * 0.4;     // R - increase red for glow
         const newG = 0.4 + intensity * 0.3;     // G - increase green for glow
         const newB = 1.0;                       // B - keep blue constant
@@ -146,7 +151,8 @@ const ParticleBackground: React.FC = () => {
         }
       }
       
-      // Notify Three.js that colors have been updated
+      // Update the color buffer with our modified values
+      colorAttribute.set(colorArray);
       colorAttribute.needsUpdate = true;
       
       lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
