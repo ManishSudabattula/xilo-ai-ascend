@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
@@ -30,8 +29,8 @@ const XiloBot: React.FC = () => {
       const dx = mousePosition.x - eyeCenterX;
       const dy = mousePosition.y - eyeCenterY;
       
-      // Limit the movement range (3px in any direction)
-      const maxMove = 3;
+      // Decrease movement range to 2px to keep within black eye circumference
+      const maxMove = 2;
       const moveX = Math.min(Math.max(dx / 50, -1), 1) * maxMove;
       const moveY = Math.min(Math.max(dy / 50, -1), 1) * maxMove;
       
@@ -57,11 +56,17 @@ const XiloBot: React.FC = () => {
           animate={{ scale: [1, 1.02, 1] }}
           transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
         />
-        {/* Eye pupils - positioned absolutely over the base image */}
-        <div className="absolute left-[38%] top-[38%] w-2 h-2 bg-white rounded-full" ref={leftEyeRef} 
-          style={{ transition: 'transform 0.1s ease-out' }} />
-        <div className="absolute right-[38%] top-[38%] w-2 h-2 bg-white rounded-full" ref={rightEyeRef}
-          style={{ transition: 'transform 0.1s ease-out' }} />
+        {/* Eye pupils - smaller size and adjusted position */}
+        <div 
+          className="absolute left-[38%] top-[38%] w-1.5 h-1.5 bg-white rounded-full" 
+          ref={leftEyeRef} 
+          style={{ transition: 'transform 0.1s ease-out' }} 
+        />
+        <div 
+          className="absolute right-[38%] top-[38%] w-1.5 h-1.5 bg-white rounded-full" 
+          ref={rightEyeRef}
+          style={{ transition: 'transform 0.1s ease-out' }} 
+        />
       </div>
     </motion.div>
   );
