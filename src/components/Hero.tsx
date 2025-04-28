@@ -26,17 +26,6 @@ const Hero: React.FC = () => {
       >
         <TypedText />
       </motion.div>
-      
-      <motion.button
-        className="px-8 py-3 bg-transparent border-2 border-frameworkx-accent text-frameworkx-accent rounded-full text-lg transition-all button-glow"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.98 }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
-      >
-        Explore My Work
-      </motion.button>
     </div>
   );
 };
