@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 
@@ -52,6 +53,15 @@ const ParticleBackground: React.FC = () => {
     scene.add(particlesMesh);
     
     camera.position.z = 10;
+    
+    // Create line geometry and material for connections
+    const lineGeometry = new THREE.BufferGeometry();
+    const lineMaterial = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0.5
+    });
     
     // Mouse tracking with smoother transitions
     let mouseX = 0;
