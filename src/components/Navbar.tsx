@@ -6,7 +6,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 px-6 py-4">
       <motion.div 
-        className="flex items-center gap-2"
+        className="flex items-center gap-1"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
