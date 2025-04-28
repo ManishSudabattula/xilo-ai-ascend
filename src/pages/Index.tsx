@@ -6,15 +6,11 @@ import Hero from '../components/Hero';
 import Navbar from '../components/Navbar';
 import FloatingBubble from '../components/FloatingBubble';
 import AboutSection from '../components/AboutSection';
-import ConnectingLine from '../components/ConnectingLine';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [scrollY, setScrollY] = useState(0);
   const [isAboutVisible, setIsAboutVisible] = useState(false);
-  const [bubblePosition, setBubblePosition] = useState({ x: 0, y: 0 });
-  const [aboutSectionPosition, setAboutSectionPosition] = useState({ x: 0, y: 0 });
-  const [lineProgress, setLineProgress] = useState(0);
   const [bubbleAnchored, setBubbleAnchored] = useState(false);
   
   const aboutSectionRef = useRef<HTMLDivElement>(null);
@@ -31,36 +27,12 @@ const Index = () => {
         const isVisible = aboutRect.top < window.innerHeight * 0.8;
         setIsAboutVisible(isVisible);
         
-        // Calculate bubble positions and animation progress
-        if (isVisible && heroBubbleRef.current) {
-          // Get the current positions
-          const aboutRect = aboutSectionRef.current.getBoundingClientRect();
-          const heroBubbleRect = heroBubbleRef.current.getBoundingClientRect();
-          
-          // Set the start position (hero bubble)
-          const startPos = {
-            x: heroBubbleRect.left + heroBubbleRect.width / 2,
-            y: heroBubbleRect.top + heroBubbleRect.height / 2
-          };
-          
-          // Set the end position (about section title)
-          const endPos = {
-            x: aboutRect.left - 50,
-            y: aboutRect.top + 30
-          };
-          
-          // Save positions for the connecting line
-          setBubblePosition(startPos);
-          setAboutSectionPosition(endPos);
-          
-          // Calculate animation progress based on scroll
-          const scrollProgress = Math.min(
-            Math.max((window.scrollY - window.innerHeight * 0.5) / (window.innerHeight * 0.3), 0),
-            1
-          );
-          setLineProgress(scrollProgress);
-          setBubbleAnchored(scrollProgress >= 0.9);
-        }
+        // Calculate animation progress based on scroll
+        const scrollProgress = Math.min(
+          Math.max((window.scrollY - window.innerHeight * 0.5) / (window.innerHeight * 0.3), 0),
+          1
+        );
+        setBubbleAnchored(scrollProgress >= 0.9);
       }
     };
     
@@ -113,23 +85,14 @@ const Index = () => {
         </div>
       </div>
       
-      {/* Connecting line between bubbles */}
-      <ConnectingLine 
-        startPoint={bubblePosition}
-        endPoint={aboutSectionPosition}
-        progress={lineProgress}
-        isVisible={isAboutVisible && lineProgress > 0}
-      />
-      
       {/* About section */}
       <div ref={aboutSectionRef}>
         <AboutSection isVisible={isAboutVisible} />
         
-        {/* Anchored About Bubble at About section */}
+        {/* Anchored About Bubble at top left of About section */}
         <div className="absolute" style={{ 
-          left: `${aboutSectionPosition.x}px`, 
-          top: `${aboutSectionPosition.y}px`,
-          transform: 'translate(-50%, -50%)'
+          left: '8px',
+          top: aboutSectionRef.current ? aboutSectionRef.current.getBoundingClientRect().top + window.scrollY + 16 : 0
         }}>
           <FloatingBubble 
             label="About" 
