@@ -16,9 +16,9 @@ const ParticleBackground: React.FC = () => {
     renderer.setClearColor(0x000000, 0);
     containerRef.current.appendChild(renderer.domElement);
     
-    // Create particles with increased count for better coverage
+    // Create particles with adjusted count for better spacing
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 300; // Increased from 200
+    const particlesCount = 200; // Decreased from 300 for less density
     const positions = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
     
@@ -31,16 +31,16 @@ const ParticleBackground: React.FC = () => {
       transparent: true
     });
 
-    // Generate random positions in a wider circular area
+    // Generate random positions in an even wider circular area
     for(let i = 0; i < particlesCount * 3; i += 3) {
       const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * 4; // Increased from 2 to spread wider
+      const radius = Math.random() * 6; // Increased from 4 to spread even wider
       
       positions[i] = Math.cos(angle) * radius;     // x
       positions[i + 1] = Math.sin(angle) * radius; // y
       positions[i + 2] = (Math.random() - 0.5);    // z - slight depth variation
       
-      // Purple-blue gradient colors
+      // Purple-blue gradient colors with reduced opacity
       colors[i] = 0.5 + Math.random() * 0.5;     // R
       colors[i + 1] = 0.3 + Math.random() * 0.4; // G
       colors[i + 2] = 1.0;                       // B
@@ -54,13 +54,13 @@ const ParticleBackground: React.FC = () => {
       vertexColors: true,
       blending: THREE.AdditiveBlending,
       transparent: true,
-      opacity: 0.8
+      opacity: 0.6 // Reduced from 0.8 for subtler particles
     });
     
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
     
-    camera.position.z = 6; // Increased from 4 to show wider view
+    camera.position.z = 8; // Increased from 6 to show wider view
     
     // Mouse movement effect with increased sensitivity
     let mouseX = 0;
@@ -96,11 +96,11 @@ const ParticleBackground: React.FC = () => {
             Math.pow(z2 - z1, 2)
           );
           
-          if(distance < 2) { // Increased from 1 to allow longer connections
+          if(distance < 3 && Math.random() > 0.7) { // Increased distance but added randomness to reduce connections
             linePositions.push(x1, y1, z1);
             linePositions.push(x2, y2, z2);
             
-            const alpha = 1 - (distance / 2);
+            const alpha = 1 - (distance / 3);
             lineColors.push(0.5, 0.3, 1, 0.5, 0.3, 1);
           }
         }
