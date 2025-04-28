@@ -10,7 +10,6 @@ interface FloatingBubbleProps {
   initialPosition?: { x: number, y: number };
   anchoredPosition?: { x: number, y: number };
   onAnchorComplete?: () => void;
-  centerBottomWhenVisible?: boolean;
 }
 
 const FloatingBubble: React.FC<FloatingBubbleProps> = ({
@@ -25,7 +24,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
   const controls = useAnimation();
   const bubbleRef = useRef<HTMLDivElement>(null);
 
-  // Enhanced floating animation with more prominent movement
+  // Enhanced floating animation with gentler movement
   const floatingAnimation: Variants = {
     hidden: {
       opacity: 0,
@@ -35,12 +34,13 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
       opacity: 1,
       scale: 1,
       y: [0, -15, 0],
-      x: [0, 8, 0],
       transition: {
-        duration: 4,
-        repeat: Infinity,
-        repeatType: "reverse",
-        ease: "easeInOut"
+        y: {
+          duration: 3,
+          repeat: Infinity,
+          repeatType: "reverse",
+          ease: "easeInOut"
+        }
       }
     },
     anchored: {
@@ -70,10 +70,8 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
     },
     active: {
       boxShadow: "0 0 15px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 0.6)",
-      scale: [1, 1.08, 1],
       transition: {
         boxShadow: { duration: 0.8 },
-        scale: { duration: 2, repeat: Infinity, repeatType: "reverse" }
       }
     }
   };
