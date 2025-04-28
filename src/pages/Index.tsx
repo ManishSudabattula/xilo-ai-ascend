@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import ParticleBackground from '../components/ParticleBackground';
 import Hero from '../components/Hero';
-import SemiCircleNav from '../components/SemiCircleNav';
 import Navbar from '../components/Navbar';
 
 const Index = () => {
@@ -35,8 +34,6 @@ const Index = () => {
       <div className="content px-4">
         <Hero />
       </div>
-      
-      <SemiCircleNav />
     </div>
   );
 };
