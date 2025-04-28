@@ -46,14 +46,14 @@ const ConnectingLine: React.FC<ConnectingLineProps> = ({
 
     if (!isVisible) return;
     
-    // Calculate control points for curved path
+    // Calculate control points for curved path - make curve more pronounced
     const controlPoint1 = {
-      x: startPoint.x + Math.random() * curviness - curviness/2,
+      x: startPoint.x + Math.random() * curviness * 1.5 - curviness/2,
       y: startPoint.y + (endPoint.y - startPoint.y) * 0.33
     };
     
     const controlPoint2 = {
-      x: endPoint.x + Math.random() * curviness - curviness/2,
+      x: endPoint.x + Math.random() * curviness * 1.5 - curviness/2,
       y: startPoint.y + (endPoint.y - startPoint.y) * 0.66
     };
     
@@ -66,20 +66,20 @@ const ConnectingLine: React.FC<ConnectingLineProps> = ({
       endPoint.x, endPoint.y
     );
     
-    // Set line style
+    // Set line style - make thicker for better visibility
     ctx.lineCap = "round";
-    ctx.lineWidth = thickness;
+    ctx.lineWidth = thickness + 1;
     
-    // Add glow effect
+    // Add stronger glow effect
     if (glow) {
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 15;
       ctx.shadowColor = color;
     }
     
-    // Create gradient for line
+    // Create gradient for line - brighter
     const gradient = ctx.createLinearGradient(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-    gradient.addColorStop(0, "rgba(255, 255, 255, 0.8)");
-    gradient.addColorStop(1, "rgba(255, 255, 255, 0.4)");
+    gradient.addColorStop(0, "rgba(255, 255, 255, 0.9)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0.5)");
     ctx.strokeStyle = gradient;
     
     // Calculate stroke length for animation

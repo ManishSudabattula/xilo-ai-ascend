@@ -17,9 +17,9 @@ const Index = () => {
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down');
   const prevScrollY = useRef(0);
   
-  // Section and bubble visibility states
+  // Section and bubble visibility states - About should be visible initially
   const [bubbleVisibility, setBubbleVisibility] = useState({
-    about: true,    // Only About is visible initially
+    about: true,
     projects: false,
     ailab: false,
     learn: false,
@@ -238,24 +238,24 @@ const Index = () => {
         <Hero />
       </div>
       
-      {/* About Bubble */}
+      {/* About Bubble - Ensure it's visible at the center-bottom on landing */}
       <FloatingBubble 
         label="About" 
         isAnchored={bubbleStates.about}
-        isActive={sectionVisibility.about}
-        isVisible={bubbleVisibility.about}
-        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
+        isActive={currentSection === 'about'}
+        isVisible={true} // Always visible initially
+        initialPosition={{ x: window.innerWidth / 2 - 32, y: window.innerHeight - 100 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.15 }}
         centerBottomWhenVisible={!bubbleStates.about && currentSection === 'none'}
       />
       
-      {/* Projects Bubble */}
+      {/* Projects Bubble - Position it center-bottom when ready to appear */}
       <FloatingBubble 
         label="Projects" 
         isAnchored={bubbleStates.projects}
-        isActive={sectionVisibility.projects}
+        isActive={currentSection === 'projects'}
         isVisible={bubbleVisibility.projects}
-        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
+        initialPosition={{ x: window.innerWidth / 2 - 32, y: window.innerHeight - 100 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.35 }}
         centerBottomWhenVisible={!bubbleStates.projects && currentSection === 'about'}
       />
@@ -264,9 +264,9 @@ const Index = () => {
       <FloatingBubble 
         label="AI Lab" 
         isAnchored={bubbleStates.ailab}
-        isActive={sectionVisibility.ailab}
+        isActive={currentSection === 'ailab'}
         isVisible={bubbleVisibility.ailab}
-        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
+        initialPosition={{ x: window.innerWidth / 2 - 32, y: window.innerHeight - 100 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.55 }}
         centerBottomWhenVisible={!bubbleStates.ailab && currentSection === 'projects'}
       />
@@ -275,9 +275,9 @@ const Index = () => {
       <FloatingBubble 
         label="Learn AI" 
         isAnchored={bubbleStates.learn}
-        isActive={sectionVisibility.learn}
+        isActive={currentSection === 'learn'}
         isVisible={bubbleVisibility.learn}
-        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
+        initialPosition={{ x: window.innerWidth / 2 - 32, y: window.innerHeight - 100 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.75 }}
         centerBottomWhenVisible={!bubbleStates.learn && currentSection === 'ailab'}
       />
@@ -286,9 +286,9 @@ const Index = () => {
       <FloatingBubble 
         label="Connect" 
         isAnchored={bubbleStates.connect}
-        isActive={sectionVisibility.connect}
+        isActive={currentSection === 'connect'}
         isVisible={bubbleVisibility.connect}
-        initialPosition={{ x: window.innerWidth / 2 - 50, y: window.innerHeight - 150 }}
+        initialPosition={{ x: window.innerWidth / 2 - 32, y: window.innerHeight - 100 }}
         anchoredPosition={{ x: 30, y: window.innerHeight * 0.95 }}
         centerBottomWhenVisible={!bubbleStates.connect && currentSection === 'learn'}
       />

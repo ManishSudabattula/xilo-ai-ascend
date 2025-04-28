@@ -26,7 +26,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
   const controls = useAnimation();
   const bubbleRef = useRef<HTMLDivElement>(null);
 
-  // Floating animation when not anchored
+  // Enhanced floating animation with more prominent movement
   const floatingAnimation: Variants = {
     hidden: {
       opacity: 0,
@@ -35,8 +35,8 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
     floating: {
       opacity: 1,
       scale: 1,
-      y: [0, -10, 0],
-      x: [0, 5, 0],
+      y: [0, -15, 0],
+      x: [0, 8, 0],
       transition: {
         duration: 4,
         repeat: Infinity,
@@ -74,16 +74,16 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
     }
   };
 
-  // Glow animation when active
+  // Enhanced glow animation when active
   const glowAnimation: Variants = {
     normal: {
-      boxShadow: "0 0 5px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.3)",
+      boxShadow: "0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 255, 255, 0.3)",
     },
     active: {
-      boxShadow: "0 0 10px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.5)",
-      scale: [1, 1.05, 1],
+      boxShadow: "0 0 15px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 0.6)",
+      scale: [1, 1.08, 1],
       transition: {
-        boxShadow: { duration: 0.5 },
+        boxShadow: { duration: 0.8 },
         scale: { duration: 2, repeat: Infinity, repeatType: "reverse" }
       }
     }
@@ -124,7 +124,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
       style={{ x: initialPosition.x, y: initialPosition.y }}
     >
       <motion.div 
-        className={`flex items-center justify-center w-16 h-16 rounded-full bg-frameworkx-black bg-opacity-70 backdrop-blur-sm border border-white border-opacity-30 cursor-pointer z-40`}
+        className="flex items-center justify-center w-16 h-16 rounded-full bg-frameworkx-black bg-opacity-70 backdrop-blur-sm border border-white border-opacity-40 cursor-pointer z-40"
         variants={glowAnimation}
         whileHover={{ scale: 1.1 }}
       >

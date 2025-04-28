@@ -31,7 +31,7 @@ const Section: React.FC<SectionProps> = ({
     'center': 'items-center'
   }[align];
 
-  // Enhanced animation variants
+  // Enhanced animation variants with improved timing
   const containerVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { 
