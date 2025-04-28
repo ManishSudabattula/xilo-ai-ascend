@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 
@@ -18,92 +19,102 @@ const ParticleBackground: React.FC = () => {
     
     // Create particles with reduced count
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 100;
+    const particlesCount = 100; // Further reduced for cleaner look
     const positions = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
+    const intensities = new Float32Array(particlesCount); // For glow effect
     
+    // Create line segments for connections
+    const lineGeometry = new THREE.BufferGeometry();
+    const lineMaterial = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      opacity: 0.15,
+      transparent: true
+    });
+
     // Generate random positions in a wider circular area
     for(let i = 0; i < particlesCount * 3; i += 3) {
       const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * 10; // Increased radius for even wider spread
+      const radius = Math.random() * 8; // Increased radius for wider spread
       
       positions[i] = Math.cos(angle) * radius;     // x
       positions[i + 1] = Math.sin(angle) * radius; // y
-      positions[i + 2] = (Math.random() - 0.5) * 2;    // z
+      positions[i + 2] = (Math.random() - 0.5) * 2;    // z - more depth variation
       
-      // Base colors (purple-blue with higher initial brightness)
-      colors[i] = 0.7;     // R - increased base red
-      colors[i + 1] = 0.5; // G - increased base green
+      // Base colors (purple-blue)
+      colors[i] = 0.6;     // R
+      colors[i + 1] = 0.4; // G
       colors[i + 2] = 1.0; // B
+      
+      intensities[i / 3] = 0.0; // Initial intensity for glow effect
     }
     
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.1,
+      size: 0.08, // Slightly larger particles
       vertexColors: true,
       blending: THREE.AdditiveBlending,
       transparent: true,
-      opacity: 0.7 // Increased base opacity
+      opacity: 0.6
     });
     
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
     
-    camera.position.z = 10;
+    camera.position.z = 10; // Moved camera back for wider view
     
-    // Mouse tracking with smoother transitions
+    // Mouse tracking with normalized coordinates
     let mouseX = 0;
     let mouseY = 0;
     let normalizedMouseX = 0;
     let normalizedMouseY = 0;
-    let targetNormalizedMouseX = 0;
-    let targetNormalizedMouseY = 0;
     
     const onDocumentMouseMove = (event: MouseEvent) => {
-      mouseX = (event.clientX - window.innerWidth / 2) / 3000; // Reduced sensitivity
-      mouseY = (event.clientY - window.innerHeight / 2) / 3000;
+      mouseX = (event.clientX - window.innerWidth / 2) / 2000;
+      mouseY = (event.clientY - window.innerHeight / 2) / 2000;
       
-      // Set target values for smooth interpolation
-      targetNormalizedMouseX = (event.clientX / window.innerWidth) * 2 - 1;
-      targetNormalizedMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+      // Calculate normalized mouse position for glow effect
+      normalizedMouseX = (event.clientX / window.innerWidth) * 2 - 1;
+      normalizedMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
     };
     
     document.addEventListener('mousemove', onDocumentMouseMove);
     
-    // Animation and particle connection logic
+    // Animation
     const connectParticles = () => {
       const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
       const positions = positionAttribute.array;
       const colorAttribute = particlesGeometry.getAttribute('color') as THREE.BufferAttribute;
-      const colors = new Float32Array(colorAttribute.array);
+      const colorArray = colorAttribute.array;
       const linePositions: number[] = [];
       const lineColors: number[] = [];
-      
-      // Smooth mouse position interpolation
-      normalizedMouseX += (targetNormalizedMouseX - normalizedMouseX) * 0.05;
-      normalizedMouseY += (targetNormalizedMouseY - normalizedMouseY) * 0.05;
       
       for(let i = 0; i < positions.length; i += 3) {
         const x1 = positions[i];
         const y1 = positions[i + 1];
         const z1 = positions[i + 2];
         
-        // Enhanced glow effect
-        const dx = x1 - (normalizedMouseX * 8);
+        // Update particle glow based on distance to mouse
+        const dx = x1 - (normalizedMouseX * 8); // Scale to match world space
         const dy = y1 - (normalizedMouseY * 8);
         const distanceToMouse = Math.sqrt(dx * dx + dy * dy);
-        const glowRadius = 4; // Increased glow radius
+        const glowRadius = 3; // Radius of glow effect
         const intensity = Math.max(0, 1 - (distanceToMouse / glowRadius));
-        const smoothIntensity = Math.pow(intensity, 1.5); // Smoother falloff
         
-        // Update colors with enhanced glow
-        colors[i] = 0.7 + smoothIntensity * 0.3;     // R
-        colors[i + 1] = 0.5 + smoothIntensity * 0.5; // G
-        colors[i + 2] = 1.0;                         // B
+        // Update colors with glow - using the properly defined colorArray
+        // Create a temporary array with new colors
+        const newR = 0.6 + intensity * 0.4;     // R - increase red for glow
+        const newG = 0.4 + intensity * 0.3;     // G - increase green for glow
+        const newB = 1.0;                       // B - keep blue constant
         
-        // Connection logic with smoother transitions
+        // Update using the proper set method instead of direct modification
+        colorArray[i] = newR;
+        colorArray[i + 1] = newG;
+        colorArray[i + 2] = newB;
+        
         for(let j = i + 3; j < positions.length; j += 3) {
           const x2 = positions[j];
           const y2 = positions[j + 1];
@@ -119,24 +130,23 @@ const ParticleBackground: React.FC = () => {
             linePositions.push(x1, y1, z1);
             linePositions.push(x2, y2, z2);
             
-            // Enhanced line glow
+            // Make connections brighter near mouse
             const lineIntensity = Math.max(
-              smoothIntensity,
+              intensity,
               Math.max(0, 1 - (Math.sqrt(
                 Math.pow(x2 - (normalizedMouseX * 8), 2) +
                 Math.pow(y2 - (normalizedMouseY * 8), 2)
               ) / glowRadius))
             );
             
-            const baseColor = 0.4 + lineIntensity * 0.6;
-            lineColors.push(baseColor, baseColor * 0.8, 1);
-            lineColors.push(baseColor, baseColor * 0.8, 1);
+            const baseColor = 0.3 + lineIntensity * 0.7;
+            lineColors.push(baseColor, baseColor * 0.6, 1);
+            lineColors.push(baseColor, baseColor * 0.6, 1);
           }
         }
       }
       
-      // Update color buffer with new colors
-      colorAttribute.set(colors);
+      // Notify Three.js that colors have been updated
       colorAttribute.needsUpdate = true;
       
       lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
