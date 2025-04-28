@@ -20,8 +20,7 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
   isVisible = true,
   initialPosition = { x: 0, y: 0 },
   anchoredPosition = { x: 0, y: 0 },
-  onAnchorComplete,
-  centerBottomWhenVisible = false
+  onAnchorComplete
 }) => {
   const controls = useAnimation();
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -41,16 +40,6 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
         duration: 4,
         repeat: Infinity,
         repeatType: "reverse",
-        ease: "easeInOut"
-      }
-    },
-    centerFloating: {
-      opacity: 1,
-      scale: 1,
-      x: window.innerWidth / 2 - 32, // Center position
-      y: window.innerHeight - 100, // Bottom position with some margin
-      transition: {
-        duration: 0.8,
         ease: "easeInOut"
       }
     },
@@ -99,12 +88,10 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
       controls.start("anchored").then(() => {
         if (onAnchorComplete) onAnchorComplete();
       });
-    } else if (centerBottomWhenVisible) {
-      controls.start("centerFloating");
     } else {
       controls.start("floating");
     }
-  }, [isAnchored, controls, onAnchorComplete, isVisible, centerBottomWhenVisible]);
+  }, [isAnchored, controls, onAnchorComplete, isVisible]);
 
   useEffect(() => {
     if (isActive) {
@@ -117,14 +104,14 @@ const FloatingBubble: React.FC<FloatingBubbleProps> = ({
   return (
     <motion.div
       ref={bubbleRef}
-      className="absolute"
+      className="z-50"
       initial="hidden"
       animate={controls}
       variants={floatingAnimation}
       style={{ x: initialPosition.x, y: initialPosition.y }}
     >
       <motion.div 
-        className="flex items-center justify-center w-16 h-16 rounded-full bg-frameworkx-black bg-opacity-70 backdrop-blur-sm border border-white border-opacity-40 cursor-pointer z-40"
+        className="flex items-center justify-center w-16 h-16 rounded-full bg-frameworkx-black bg-opacity-70 backdrop-blur-sm border border-white border-opacity-40 cursor-pointer z-50"
         variants={glowAnimation}
         whileHover={{ scale: 1.1 }}
       >

@@ -34,17 +34,18 @@ const Index = () => {
       <Navbar />
       
       {/* Hero section */}
-      <div className="content px-4">
+      <div className="content px-4 relative">
         <Hero />
+        
+        {/* Floating About Bubble at center-bottom within hero section */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2">
+          <FloatingBubble 
+            label="About" 
+            isActive={false}
+            isVisible={true}
+          />
+        </div>
       </div>
-      
-      {/* Floating About Bubble at center-bottom */}
-      <FloatingBubble 
-        label="About" 
-        isActive={false}
-        isVisible={true}
-        centerBottomWhenVisible={true}
-      />
       
       {/* Adding enough space for scrolling */}
       <div className="h-[150vh]"></div>
