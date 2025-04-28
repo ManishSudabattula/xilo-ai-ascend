@@ -1,13 +1,25 @@
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useMouse } from 'react-use';
 
 const XiloBot: React.FC = () => {
   const botRef = useRef<HTMLDivElement>(null);
-  const botHeadRef = useRef<HTMLImageElement>(null);
-  const mouse = useMouse(botRef);
+  const botHeadRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  // Track mouse position
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
+  // Update head position based on mouse position
   useEffect(() => {
     if (!botRef.current || !botHeadRef.current) return;
 
@@ -16,37 +28,40 @@ const XiloBot: React.FC = () => {
     const botCenterY = botRect.top + botRect.height / 2;
 
     // Calculate angle between the bot center and the mouse position
-    const dx = mouse.docX - botCenterX;
-    const dy = mouse.docY - botCenterY;
+    const dx = mousePosition.x - botCenterX;
+    const dy = mousePosition.y - botCenterY;
     
-    // Increased movement range and made more responsive
-    const maxHeadMovement = 20;
-    const headMovementX = Math.min(Math.max(dx / 25, -1), 1) * maxHeadMovement;
-    const headMovementY = Math.min(Math.max(dy / 25, -1), 1) * maxHeadMovement;
+    // Calculate head movement with improved responsiveness
+    const maxHeadMovement = 25; // Increased for more noticeable movement
+    const headMovementX = Math.min(Math.max(dx / 20, -1), 1) * maxHeadMovement;
+    const headMovementY = Math.min(Math.max(dy / 20, -1), 1) * maxHeadMovement;
 
-    // Apply transformation to the bot head
+    // Apply transformation to the bot head with smoother transitions
     botHeadRef.current.style.transform = `translate(${headMovementX}px, ${headMovementY}px)`;
+    botHeadRef.current.style.transition = 'transform 0.2s ease-out';
     
-  }, [mouse.docX, mouse.docY]);
+  }, [mousePosition]);
 
   return (
     <motion.div 
       ref={botRef}
-      className="relative w-48 h-48 md:w-60 md:h-60 mx-auto mb-6" // Decreased size from w-64/h-64 to w-48/h-48
+      className="relative w-40 h-40 md:w-52 md:h-52 mx-auto mb-6" // Further decreased size
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
       {/* Container for the head to allow independent movement */}
-      <div className="relative w-full h-full">
+      <div 
+        ref={botHeadRef} 
+        className="relative w-full h-full"
+        style={{ willChange: 'transform' }}
+      >
         <motion.img 
-          ref={botHeadRef}
           src="/lovable-uploads/3415b00d-0871-4eec-8332-4aea9d2fc114.png" 
           alt="Xilo Bot"
-          className="absolute w-full h-full"
+          className="w-full h-full"
           animate={{ scale: [1, 1.02, 1] }}
           transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-          style={{ willChange: 'transform' }} // Optimize for animation performance
         />
       </div>
     </motion.div>
