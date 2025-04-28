@@ -8,7 +8,7 @@ const Hero: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen relative">
       {/* Gradient Background */}
-      <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-r from-[#3E196E] via-[#45CAFF] via-[#D46C76] to-[#FFC07C] opacity-30 blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-b-full bg-gradient-to-r from-[#3E196E] via-[#45CAFF] via-[#D46C76] to-[#FFC07C] opacity-30 blur-3xl" />
       
       <XiloBot />
       
