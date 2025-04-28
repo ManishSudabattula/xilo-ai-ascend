@@ -32,11 +32,14 @@ const ParticleBackground: React.FC = () => {
       transparent: true
     });
 
-    // Generate random particle positions and colors
+    // Generate fixed particle positions and colors in a grid-like pattern
     for(let i = 0; i < particlesCount * 3; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 5;
-      positions[i + 1] = (Math.random() - 0.5) * 5;
-      positions[i + 2] = (Math.random() - 0.5) * 5;
+      const col = Math.floor((i / 3) % Math.sqrt(particlesCount));
+      const row = Math.floor((i / 3) / Math.sqrt(particlesCount));
+      
+      positions[i] = (col - Math.sqrt(particlesCount) / 2) * 0.5;
+      positions[i + 1] = (row - Math.sqrt(particlesCount) / 2) * 0.5;
+      positions[i + 2] = 0;
       
       // Purple-blue gradient colors
       colors[i] = 0.5 + Math.random() * 0.5; // R
@@ -60,20 +63,19 @@ const ParticleBackground: React.FC = () => {
     
     camera.position.z = 4;
     
-    // Mouse movement effect
+    // Mouse movement effect with increased sensitivity
     let mouseX = 0;
     let mouseY = 0;
     
     const onDocumentMouseMove = (event: MouseEvent) => {
-      mouseX = (event.clientX - window.innerWidth / 2) / 2000;
-      mouseY = (event.clientY - window.innerHeight / 2) / 2000;
+      mouseX = (event.clientX - window.innerWidth / 2) / 1000;
+      mouseY = (event.clientY - window.innerHeight / 2) / 1000;
     };
     
     document.addEventListener('mousemove', onDocumentMouseMove);
     
     // Animation
     const connectParticles = () => {
-      // Fix type issue: properly type the buffer attribute and safely access its array
       const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
       const positions = positionAttribute.array;
       const linePositions: number[] = [];
@@ -117,26 +119,18 @@ const ParticleBackground: React.FC = () => {
     const animate = () => {
       requestAnimationFrame(animate);
       
+      // Update particle positions based on mouse movement
+      const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
+      const positions = positionAttribute.array as Float32Array;
+      
+      // Rotate the entire mesh slightly based on mouse position
+      particlesMesh.rotation.x += (mouseY * 2 - particlesMesh.rotation.x) * 0.05;
+      particlesMesh.rotation.y += (mouseX * 2 - particlesMesh.rotation.y) * 0.05;
+      
       // Remove old line segments and add new ones
       scene.remove(lineSegments);
       lineSegments = connectParticles();
       scene.add(lineSegments);
-      
-      // Rotate based on mouse position
-      particlesMesh.rotation.x += mouseY * 0.5;
-      particlesMesh.rotation.y += mouseX * 0.5;
-      
-      // Gentle wave motion
-      // Fix type issue: properly type the buffer attribute and safely access its array
-      const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
-      const positions = positionAttribute.array;
-      const time = Date.now() * 0.001;
-      
-      for(let i = 0; i < positions.length; i += 3) {
-        positions[i + 1] += Math.sin(time + positions[i] * 0.5) * 0.002;
-      }
-      
-      particlesGeometry.attributes.position.needsUpdate = true;
       
       renderer.render(scene, camera);
     };
