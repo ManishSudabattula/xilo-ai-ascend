@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 
 const XiloBot: React.FC = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  // container refs to get the eye sockets' positions
   const leftEyeContainerRef = useRef<HTMLDivElement>(null);
   const rightEyeContainerRef = useRef<HTMLDivElement>(null);
+  // pupil refs to apply the transforms
   const leftPupilRef = useRef<HTMLDivElement>(null);
   const rightPupilRef = useRef<HTMLDivElement>(null);
 
@@ -22,18 +25,27 @@ const XiloBot: React.FC = () => {
       pupil: HTMLDivElement | null
     ) => {
       if (!container || !pupil) return;
-      const socket = container.getBoundingClientRect();
-      const cx = socket.left + socket.width / 2;
-      const cy = socket.top + socket.height / 2;
-      const dx = mousePosition.x - cx;
-      const dy = mousePosition.y - cy;
+
+      // get socket center
+      const socketRect = container.getBoundingClientRect();
+      const centerX = socketRect.left + socketRect.width / 2;
+      const centerY = socketRect.top + socketRect.height / 2;
+
+      // vector from eye center to mouse
+      const dx = mousePosition.x - centerX;
+      const dy = mousePosition.y - centerY;
       const angle = Math.atan2(dy, dx);
-      const pRect = pupil.getBoundingClientRect();
-      const maxX = (socket.width - pRect.width) / 2;
-      const maxY = (socket.height - pRect.height) / 2;
-      const tx = Math.cos(angle) * maxX * 0.8;
-      const ty = Math.sin(angle) * maxY * 0.8;
-      pupil.style.transform = `translate(${tx}px, ${ty}px)`;
+
+      // compute how far the pupil can travel inside the socket
+      const pupilRect = pupil.getBoundingClientRect();
+      const maxX = (socketRect.width - pupilRect.width) / 2;
+      const maxY = (socketRect.height - pupilRect.height) / 2;
+
+      // scale down so it never reaches the very edge
+      const travelX = Math.cos(angle) * maxX * 0.8;
+      const travelY = Math.sin(angle) * maxY * 0.8;
+
+      pupil.style.transform = `translate(${travelX}px, ${travelY}px)`;
     };
 
     movePupil(leftEyeContainerRef.current, leftPupilRef.current);
@@ -47,6 +59,7 @@ const XiloBot: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: 'easeOut' }}
     >
+      {/* Bot image */}
       <motion.img
         src="/lovable-uploads/157c6496-b0ae-407f-916f-c9ac7e766fc2.png"
         alt="Xilo Bot"
@@ -55,25 +68,25 @@ const XiloBot: React.FC = () => {
         transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
       />
 
-      {/* Left eye */}
+      {/* Left eye socket */}
       <div
         ref={leftEyeContainerRef}
-        className="absolute left-[29%] top-[35%] w-7 h-7 rounded-full overflow-hidden"
+        className="absolute left-[36%] top-[34%] w-4 h-4 rounded-full overflow-hidden"
       >
         <div
           ref={leftPupilRef}
-          className="absolute left-1/2 top-1/2 w-1/4 h-1/4 bg-black rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ease-out"
+          className="absolute left-1/2 top-1/2 w-1/3 h-1/3 bg-black rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ease-out"
         />
       </div>
 
-      {/* Right eye */}
+      {/* Right eye socket */}
       <div
         ref={rightEyeContainerRef}
-        className="absolute left-[61%] top-[35%] w-7 h-7 rounded-full overflow-hidden"
+        className="absolute left-[60%] top-[34%] w-8 h-8 rounded-full overflow-hidden"
       >
         <div
           ref={rightPupilRef}
-          className="absolute left-1/2 top-1/2 w-1/4 h-1/4 bg-black rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ease-out"
+          className="absolute left-1/2 top-1/2 w-1/3 h-1/3 bg-black rounded-full -translate-x-1/2 -translate-y-1/2 transition-transform duration-75 ease-out"
         />
       </div>
     </motion.div>
