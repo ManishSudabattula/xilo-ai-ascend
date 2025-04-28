@@ -87,8 +87,6 @@ const ParticleBackground: React.FC = () => {
     const connectParticles = () => {
       const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
       const positions = positionAttribute.array;
-      const colorAttribute = particlesGeometry.getAttribute('color') as THREE.BufferAttribute;
-      const colorArray = colorAttribute.array;
       const linePositions: number[] = [];
       const lineColors: number[] = [];
       
@@ -104,16 +102,12 @@ const ParticleBackground: React.FC = () => {
         const glowRadius = 3; // Radius of glow effect
         const intensity = Math.max(0, 1 - (distanceToMouse / glowRadius));
         
-        // Update colors with glow - using the properly defined colorArray
-        // Create a temporary array with new colors
-        const newR = 0.6 + intensity * 0.4;     // R - increase red for glow
-        const newG = 0.4 + intensity * 0.3;     // G - increase green for glow
-        const newB = 1.0;                       // B - keep blue constant
-        
-        // Update using the proper set method instead of direct modification
-        colorArray[i] = newR;
-        colorArray[i + 1] = newG;
-        colorArray[i + 2] = newB;
+        // Update colors with glow
+        const colorAttribute = particlesGeometry.getAttribute('color') as THREE.BufferAttribute;
+        const colors = colorAttribute.array;
+        colors[i] = 0.6 + intensity * 0.4;     // R - increase red for glow
+        colors[i + 1] = 0.4 + intensity * 0.3; // G - increase green for glow
+        colors[i + 2] = 1.0;                   // B - keep blue constant
         
         for(let j = i + 3; j < positions.length; j += 3) {
           const x2 = positions[j];
@@ -146,7 +140,6 @@ const ParticleBackground: React.FC = () => {
         }
       }
       
-      // Notify Three.js that colors have been updated
       colorAttribute.needsUpdate = true;
       
       lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
