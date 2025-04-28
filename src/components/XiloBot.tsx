@@ -82,7 +82,7 @@ const XiloBot: React.FC = () => {
       {/* Right eye socket */}
       <div
         ref={rightEyeContainerRef}
-        className="absolute left-[60%] top-[34%] w-8 h-8 rounded-full overflow-hidden"
+        className="absolute left-[55%] top-[34%] w-4 h-4 rounded-full overflow-hidden"
       >
         <div
           ref={rightPupilRef}
