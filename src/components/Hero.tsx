@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import TypedText from './TypedText';
@@ -8,7 +7,7 @@ const Hero: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen relative">
       {/* Gradient Background */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] h-[300px] rounded-b-full bg-gradient-to-r from-[#3E196E] via-[#45CAFF] via-[#45CAFF] to-[#FFC07C] opacity-30 blur-3xl" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] h-[400px] rounded-b-[300px] bg-gradient-to-r from-[#3E196E] via-[#45CAFF] via-[#45CAFF] to-[#FFC07C] opacity-30 blur-3xl" />
       
       <XiloBot />
       
