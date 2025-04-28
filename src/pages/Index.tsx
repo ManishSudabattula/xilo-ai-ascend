@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import ParticleBackground from '../components/ParticleBackground';
 import Hero from '../components/Hero';
 import SemiCircleNav from '../components/SemiCircleNav';
+import Navbar from '../components/Navbar';
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -26,15 +27,15 @@ const Index = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-frameworkx-black">
-      {/* Background particles */}
       <ParticleBackground />
       
-      {/* Main content */}
+      {/* Add Navbar */}
+      <Navbar />
+      
       <div className="content px-4">
         <Hero />
       </div>
       
-      {/* Navigation */}
       <SemiCircleNav />
     </div>
   );
