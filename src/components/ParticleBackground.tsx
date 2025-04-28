@@ -73,7 +73,9 @@ const ParticleBackground: React.FC = () => {
     
     // Animation
     const connectParticles = () => {
-      const positions = particlesGeometry.attributes.position.array as Float32Array;
+      // Fix type issue: properly type the buffer attribute and safely access its array
+      const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
+      const positions = positionAttribute.array;
       const linePositions: number[] = [];
       const lineColors: number[] = [];
       
@@ -125,7 +127,9 @@ const ParticleBackground: React.FC = () => {
       particlesMesh.rotation.y += mouseX * 0.5;
       
       // Gentle wave motion
-      const positions = particlesGeometry.attributes.position.array as Float32Array;
+      // Fix type issue: properly type the buffer attribute and safely access its array
+      const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
+      const positions = positionAttribute.array;
       const time = Date.now() * 0.001;
       
       for(let i = 0; i < positions.length; i += 3) {
