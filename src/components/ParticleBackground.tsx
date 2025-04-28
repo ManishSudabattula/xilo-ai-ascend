@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 
@@ -16,9 +17,9 @@ const ParticleBackground: React.FC = () => {
     renderer.setClearColor(0x000000, 0);
     containerRef.current.appendChild(renderer.domElement);
     
-    // Create particles with adjusted count for better spacing
+    // Create particles with reduced count
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 200; // Decreased from 300 for less density
+    const particlesCount = 120; // Decreased from 200 for less visual complexity
     const positions = new Float32Array(particlesCount * 3);
     const colors = new Float32Array(particlesCount * 3);
     
@@ -27,14 +28,14 @@ const ParticleBackground: React.FC = () => {
     const lineMaterial = new THREE.LineBasicMaterial({
       vertexColors: true,
       blending: THREE.AdditiveBlending,
-      opacity: 0.2,
+      opacity: 0.15, // Reduced from 0.2 for subtler lines
       transparent: true
     });
 
-    // Generate random positions in an even wider circular area
+    // Generate random positions in a wide circular area
     for(let i = 0; i < particlesCount * 3; i += 3) {
       const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * 6; // Increased from 4 to spread even wider
+      const radius = Math.random() * 6;
       
       positions[i] = Math.cos(angle) * radius;     // x
       positions[i + 1] = Math.sin(angle) * radius; // y
@@ -54,21 +55,21 @@ const ParticleBackground: React.FC = () => {
       vertexColors: true,
       blending: THREE.AdditiveBlending,
       transparent: true,
-      opacity: 0.6 // Reduced from 0.8 for subtler particles
+      opacity: 0.5 // Reduced from 0.6 for subtler particles
     });
     
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
     
-    camera.position.z = 8; // Increased from 6 to show wider view
+    camera.position.z = 8;
     
-    // Mouse movement effect with increased sensitivity
+    // Mouse movement effect with reduced sensitivity
     let mouseX = 0;
     let mouseY = 0;
     
     const onDocumentMouseMove = (event: MouseEvent) => {
-      mouseX = (event.clientX - window.innerWidth / 2) / 1000;
-      mouseY = (event.clientY - window.innerHeight / 2) / 1000;
+      mouseX = (event.clientX - window.innerWidth / 2) / 2000; // Reduced sensitivity
+      mouseY = (event.clientY - window.innerHeight / 2) / 2000;
     };
     
     document.addEventListener('mousemove', onDocumentMouseMove);
@@ -96,11 +97,12 @@ const ParticleBackground: React.FC = () => {
             Math.pow(z2 - z1, 2)
           );
           
-          if(distance < 3 && Math.random() > 0.7) { // Increased distance but added randomness to reduce connections
+          // More strict connection rules for stability
+          if(distance < 2.5 && Math.random() > 0.85) {
             linePositions.push(x1, y1, z1);
             linePositions.push(x2, y2, z2);
             
-            const alpha = 1 - (distance / 3);
+            const alpha = 1 - (distance / 2.5);
             lineColors.push(0.5, 0.3, 1, 0.5, 0.3, 1);
           }
         }
@@ -118,18 +120,16 @@ const ParticleBackground: React.FC = () => {
     const animate = () => {
       requestAnimationFrame(animate);
       
-      // Update particle positions based on mouse movement
-      const positionAttribute = particlesGeometry.getAttribute('position') as THREE.BufferAttribute;
-      const positions = positionAttribute.array as Float32Array;
+      // Reduced rotation speed for more stability
+      particlesMesh.rotation.x += (mouseY * 0.5 - particlesMesh.rotation.x) * 0.02;
+      particlesMesh.rotation.y += (mouseX * 0.5 - particlesMesh.rotation.y) * 0.02;
       
-      // Rotate the entire mesh slightly based on mouse position
-      particlesMesh.rotation.x += (mouseY * 2 - particlesMesh.rotation.x) * 0.05;
-      particlesMesh.rotation.y += (mouseX * 2 - particlesMesh.rotation.y) * 0.05;
-      
-      // Remove old line segments and add new ones
-      scene.remove(lineSegments);
-      lineSegments = connectParticles();
-      scene.add(lineSegments);
+      // Update connections less frequently
+      if (Math.random() > 0.95) {
+        scene.remove(lineSegments);
+        lineSegments = connectParticles();
+        scene.add(lineSegments);
+      }
       
       renderer.render(scene, camera);
     };
