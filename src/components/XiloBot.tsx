@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
@@ -20,34 +19,26 @@ const XiloBot: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Function to calculate and apply pupil movement in a 360-degree pattern
     const moveEyes = (eyeRef: HTMLDivElement | null) => {
       if (!eyeRef) return;
       
-      // Get eye position
       const eye = eyeRef.getBoundingClientRect();
       const eyeCenterX = eye.left + eye.width / 2;
       const eyeCenterY = eye.top + eye.height / 2;
       
-      // Calculate distance from eye center to mouse
       const dx = mousePosition.x - eyeCenterX;
       const dy = mousePosition.y - eyeCenterY;
       
-      // Calculate angle for circular movement (360 degrees)
       const angle = Math.atan2(dy, dx);
       
-      // Calculate radius of movement (how far pupils can move from center)
-      const eyeRadius = Math.min(eye.width, eye.height) * 0.4;
+      const eyeRadius = Math.min(eye.width, eye.height) * 0.25;
       
-      // Convert polar coordinates to Cartesian for pupil position
       const moveX = Math.cos(angle) * eyeRadius;
       const moveY = Math.sin(angle) * eyeRadius;
       
-      // Apply the transformation
       eyeRef.style.transform = `translate(${moveX}px, ${moveY}px)`;
     };
 
-    // Apply movement to both eyes
     moveEyes(leftEyeRef.current);
     moveEyes(rightEyeRef.current);
   }, [mousePosition]);
@@ -61,7 +52,6 @@ const XiloBot: React.FC = () => {
       ref={botRef}
     >
       <div className="relative w-full h-full">
-        {/* New XiloBot image */}
         <motion.img 
           src="/lovable-uploads/157c6496-b0ae-407f-916f-c9ac7e766fc2.png" 
           alt="Xilo Bot"
@@ -70,21 +60,17 @@ const XiloBot: React.FC = () => {
           transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
         />
 
-        {/* Left eye area - now positioned for red eye */}
         <div className="absolute left-[30%] top-[30%] w-[15%] h-[15%] rounded-full overflow-hidden">
-          {/* Pupil */}
           <div 
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[30%] bg-black rounded-full" 
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%] bg-white rounded-full" 
             ref={leftEyeRef} 
             style={{ transition: 'transform 0.1s ease-out' }} 
           />
         </div>
         
-        {/* Right eye area */}
         <div className="absolute right-[30%] top-[30%] w-[15%] h-[15%] rounded-full overflow-hidden">
-          {/* Pupil */}
           <div 
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[30%] h-[30%] bg-black rounded-full" 
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[20%] h-[20%] bg-white rounded-full" 
             ref={rightEyeRef}
             style={{ transition: 'transform 0.1s ease-out' }} 
           />
