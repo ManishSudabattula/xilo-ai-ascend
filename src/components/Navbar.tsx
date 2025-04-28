@@ -14,7 +14,7 @@ const Navbar = () => {
         <img 
           src="/lovable-uploads/4e2205d8-6d1e-429d-9411-a18c7c0d7754.png" 
           alt="FrameWorkx Logo" 
-          className="w-10 h-10 invert"
+          className="w-10 h-10 brightness-0 invert"
         />
         <span className="text-xl font-bold text-frameworkx-text">FrameWorkx</span>
       </motion.div>
