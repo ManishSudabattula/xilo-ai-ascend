@@ -19,49 +19,120 @@ const ParticleBackground: React.FC = () => {
     
     // Create particles
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 1000;
+    const particlesCount = 200;
+    const positions = new Float32Array(particlesCount * 3);
+    const colors = new Float32Array(particlesCount * 3);
     
-    const posArray = new Float32Array(particlesCount * 3);
-    
-    for(let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 5;
+    // Create line segments for connections
+    const lineGeometry = new THREE.BufferGeometry();
+    const lineMaterial = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      opacity: 0.2,
+      transparent: true
+    });
+
+    // Generate random particle positions and colors
+    for(let i = 0; i < particlesCount * 3; i += 3) {
+      positions[i] = (Math.random() - 0.5) * 5;
+      positions[i + 1] = (Math.random() - 0.5) * 5;
+      positions[i + 2] = (Math.random() - 0.5) * 5;
+      
+      // Purple-blue gradient colors
+      colors[i] = 0.5 + Math.random() * 0.5; // R
+      colors[i + 1] = 0.3 + Math.random() * 0.4; // G
+      colors[i + 2] = 1.0; // B
     }
     
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.01,
-      color: 0xFF312E,
+      size: 0.05,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
       transparent: true,
-      opacity: 0.4,
-      blending: THREE.AdditiveBlending
+      opacity: 0.8
     });
     
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
     
-    camera.position.z = 2;
+    camera.position.z = 4;
     
     // Mouse movement effect
     let mouseX = 0;
     let mouseY = 0;
     
     const onDocumentMouseMove = (event: MouseEvent) => {
-      mouseX = (event.clientX - window.innerWidth / 2) / 5000;
-      mouseY = (event.clientY - window.innerHeight / 2) / 5000;
+      mouseX = (event.clientX - window.innerWidth / 2) / 2000;
+      mouseY = (event.clientY - window.innerHeight / 2) / 2000;
     };
     
     document.addEventListener('mousemove', onDocumentMouseMove);
     
     // Animation
+    const connectParticles = () => {
+      const positions = particlesGeometry.attributes.position.array as Float32Array;
+      const linePositions: number[] = [];
+      const lineColors: number[] = [];
+      
+      for(let i = 0; i < positions.length; i += 3) {
+        const x1 = positions[i];
+        const y1 = positions[i + 1];
+        const z1 = positions[i + 2];
+        
+        for(let j = i + 3; j < positions.length; j += 3) {
+          const x2 = positions[j];
+          const y2 = positions[j + 1];
+          const z2 = positions[j + 2];
+          
+          const distance = Math.sqrt(
+            Math.pow(x2 - x1, 2) +
+            Math.pow(y2 - y1, 2) +
+            Math.pow(z2 - z1, 2)
+          );
+          
+          if(distance < 1) {
+            linePositions.push(x1, y1, z1);
+            linePositions.push(x2, y2, z2);
+            
+            const alpha = 1 - (distance / 1);
+            lineColors.push(0.5, 0.3, 1, 0.5, 0.3, 1);
+          }
+        }
+      }
+      
+      lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+      lineGeometry.setAttribute('color', new THREE.Float32BufferAttribute(lineColors, 3));
+      
+      return new THREE.LineSegments(lineGeometry, lineMaterial);
+    };
+    
+    let lineSegments = connectParticles();
+    scene.add(lineSegments);
+    
     const animate = () => {
       requestAnimationFrame(animate);
       
-      particlesMesh.rotation.x += 0.0002;
-      particlesMesh.rotation.y += 0.0003;
+      // Remove old line segments and add new ones
+      scene.remove(lineSegments);
+      lineSegments = connectParticles();
+      scene.add(lineSegments);
       
-      particlesMesh.rotation.x += mouseY * 0.2;
-      particlesMesh.rotation.y += mouseX * 0.2;
+      // Rotate based on mouse position
+      particlesMesh.rotation.x += mouseY * 0.5;
+      particlesMesh.rotation.y += mouseX * 0.5;
+      
+      // Gentle wave motion
+      const positions = particlesGeometry.attributes.position.array as Float32Array;
+      const time = Date.now() * 0.001;
+      
+      for(let i = 0; i < positions.length; i += 3) {
+        positions[i + 1] += Math.sin(time + positions[i] * 0.5) * 0.002;
+      }
+      
+      particlesGeometry.attributes.position.needsUpdate = true;
       
       renderer.render(scene, camera);
     };
@@ -88,6 +159,8 @@ const ParticleBackground: React.FC = () => {
       
       particlesGeometry.dispose();
       particlesMaterial.dispose();
+      lineGeometry.dispose();
+      lineMaterial.dispose();
     };
   }, []);
   
