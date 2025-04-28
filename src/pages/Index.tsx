@@ -1,12 +1,41 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useEffect, useState } from 'react';
+import ParticleBackground from '../components/ParticleBackground';
+import Hero from '../components/Hero';
+import SemiCircleNav from '../components/SemiCircleNav';
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-frameworkx-black">
+        <div className="w-16 h-16 border-t-4 border-frameworkx-accent rounded-full animate-spin"></div>
       </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-screen overflow-hidden bg-frameworkx-black">
+      {/* Background particles */}
+      <ParticleBackground />
+      
+      {/* Main content */}
+      <div className="content px-4">
+        <Hero />
+      </div>
+      
+      {/* Navigation */}
+      <SemiCircleNav />
     </div>
   );
 };
