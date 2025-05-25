@@ -1,120 +1,62 @@
+// src/components/ui/FloatingBubble.tsx
 
-import React, { useRef, useEffect } from 'react';
-import { motion, useAnimation, Variants } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
-interface FloatingBubbleProps {
-  label: string;
-  isAnchored?: boolean;
-  isActive?: boolean;
-  isVisible?: boolean;
-  initialPosition?: { x: number, y: number };
-  anchoredPosition?: { x: number, y: number };
-  onAnchorComplete?: () => void;
-}
+const SECTIONS: { id: string; label: string }[] = [
+  { id: 'landing', label: '' },
+  { id: 'about',   label: 'About' },
+  { id: 'projects',label: 'Projects' },
+  // add more as you build
+];
 
-const FloatingBubble: React.FC<FloatingBubbleProps> = ({
-  label,
-  isAnchored = false,
-  isActive = false,
-  isVisible = true,
-  initialPosition = { x: 0, y: 0 },
-  anchoredPosition = { x: 0, y: 0 },
-  onAnchorComplete
-}) => {
-  const controls = useAnimation();
-  const bubbleRef = useRef<HTMLDivElement>(null);
+const FloatingBubble: React.FC = () => {
+  const [current, setCurrent] = useState<string>('');
 
-  // Enhanced floating animation with gentler movement
-  const floatingAnimation: Variants = {
-    hidden: {
-      opacity: 0,
-      scale: 0,
-    },
-    floating: {
-      opacity: 1,
-      scale: 1,
-      y: [0, -15, 0],
-      transition: {
-        y: {
-          duration: 3,
-          repeat: Infinity,
-          repeatType: "reverse",
-          ease: "easeInOut"
+  useEffect(() => {
+    const sectionEls = SECTIONS
+      .map(s => ({ ...s, el: document.getElementById(s.id) }))
+      .filter(s => s.el);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (let entry of entries) {
+          if (entry.isIntersecting) {
+            const found = sectionEls.find(s => s.el === entry.target);
+            setCurrent(found?.label || '');
+          }
         }
+      },
+      {
+        rootMargin: '0px 0px -50% 0px',
+        threshold: 0,
       }
-    },
-    anchored: {
-      opacity: 1,
-      scale: 1,
-      x: anchoredPosition.x,
-      y: anchoredPosition.y,
-      transition: {
-        duration: 0.8,
-        ease: "easeInOut"
-      }
-    },
-    exit: {
-      opacity: 0,
-      scale: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeInOut"
-      }
-    }
-  };
+    );
 
-  // Enhanced glow animation when active
-  const glowAnimation: Variants = {
-    normal: {
-      boxShadow: "0 0 10px rgba(255, 255, 255, 0.6), 0 0 20px rgba(255, 255, 255, 0.3)",
-    },
-    active: {
-      boxShadow: "0 0 15px rgba(255, 255, 255, 0.9), 0 0 30px rgba(255, 255, 255, 0.6)",
-      transition: {
-        boxShadow: { duration: 0.8 },
-      }
-    }
-  };
+    sectionEls.forEach(s => observer.observe(s.el!));
+    return () => observer.disconnect();
+  }, []);
 
-  useEffect(() => {
-    if (!isVisible) {
-      controls.start("hidden");
-      return;
-    }
-
-    if (isAnchored) {
-      controls.start("anchored").then(() => {
-        if (onAnchorComplete) onAnchorComplete();
-      });
-    } else {
-      controls.start("floating");
-    }
-  }, [isAnchored, controls, onAnchorComplete, isVisible]);
-
-  useEffect(() => {
-    if (isActive) {
-      controls.start("active");
-    } else {
-      controls.start("normal");
-    }
-  }, [isActive, controls]);
+  if (!current) return null;
 
   return (
     <motion.div
-      ref={bubbleRef}
-      className="z-50"
-      initial="hidden"
-      animate={controls}
-      variants={floatingAnimation}
-      style={{ x: initialPosition.x, y: initialPosition.y }}
+      className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
     >
-      <motion.div 
-        className="flex items-center justify-center w-16 h-16 rounded-full bg-frameworkx-black bg-opacity-70 backdrop-blur-sm border border-white border-opacity-40 cursor-pointer z-50"
-        variants={glowAnimation}
-        whileHover={{ scale: 1.1 }}
+      <div
+        className="
+          flex items-center justify-center
+          w-16 h-16 rounded-full
+          bg-frameworkx-black bg-opacity-70 backdrop-blur-sm
+          border border-white border-opacity-40
+          text-white font-medium
+        "
       >
-        <span className="text-frameworkx-text font-medium text-sm">{label}</span>
-      </motion.div>
+        {current}
+      </div>
     </motion.div>
   );
 };
